@@ -206,15 +206,57 @@ export const PROVIDER = ({children}) => {
 
       ethBalance = await provider.getBalance(RECIPIENT);
       tokenA = await tokenAddress1.balance;
-      tokenA = await tokenAddress2.balance;
+      tokenB = await tokenAddress2.balance;
       console.log("____________BEFORE");
-      console.log("EthBalance:", ethers.utils.formatUnits(eth));
+      console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
+      console.log("tokenA:", tokenA);
+      console.log("tokenB:", tokenB);
+
+      const tx = await sigher.sendTransaction({
+        data: params.calldata,
+        to: "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B",
+        value: params.value,
+        from: RECIPIENT,
+      });
+
+      console.log("____________CALLING_ME");
+      const receipt = await tx.wait();
+
+      console.log("_________SUCCESS");
+      console.log("STATUS", receipt.status);
+
+      ethBalance = await provider.getBalance(RECIPIENT);
+      tokenA = await tokenAddress1.balance;
+      tokenB== await tokenAddress2.balance;
+      console.log("-------After");
+
+      console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
+      console.log("tokenA:", tokenA);
+      console.log("tokenB:", tokenB);
     } catch (error) {
       const errorMsg = parseErrorMsg(error);
       notifyError(errorMsg);
       console.log(error);
     }
-  }
+  };
+
+  return (
+    <CONTEXT.Provider 
+      value={{
+        TOKEN_SWAP,
+        LOAD_TOKEN,
+        notifyError,
+        notifySuccess,
+        setLoader,
+        loader,
+        connect,
+        address,
+        swap,
+      }}
+    >
+      {children}
+    </CONTEXT.Provider>
+  )
 
 };
 
