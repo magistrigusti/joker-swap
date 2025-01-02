@@ -17,7 +17,7 @@ const {
   Route: RouteV3,
 } = require("@uniswap/v3-sdk");
 const { MixedRouteTrade, Trade: RouterTrade } = require("@uniswap/router-sdk");
-const IUniswapV3Pool = require("2uniswap/v3-core/artifacts/contracts/UniswapV3Pool.sol/UniswapV3Pool.json");
+const IUniswapV3Pool = require("@uniswap/v3-core/artifacts/contracts/UniswapV3Pool.sol/UniswapV3Pool.json");
 const JSBI = require("jsbi");
 const erc20Abi = require("../abis__erc20.json");
 
@@ -38,7 +38,7 @@ const USDC = new Token(
   6,
   "USDC",
   "USD Coin"
-); 
+);
 
 const wethContract = new hardhat.ethers.Contract(
   WETH.address,
@@ -52,39 +52,37 @@ const usdcContract = new hardhat.ethers.Contract(
 );
 
 async function getPool(tokenA, tokenB, feeAmount) {
-  const [token0, token1] = tokenA.sortsBefore(tokenB)
-    ? [tokenA, tokenB] : [tokenB, tokenA];
+  const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA];
 
-  const poolAddress = Pool.getAddress(token0, token1, feeAmount, provider);
+  const poolAddress = Pool.getAddress(token0, token1, feeAmount);
   const contract = new hardhat.ethers.Contract(poolAddress, IUniswapV3Pool.abi, provider);
 
-  let liquidity = await contract.liquidity();
-  let { sqrtPriceX96, tick } = await contract.slot0();
+  const liquidity = await contract.liquidity();
+  const { sqrtPriceX96, tick } = await contract.slot0();
 
-  return new Pool (
+  return new Pool(
     token0, token1, feeAmount, sqrtPriceX96,
     liquidity, tick, [{
       index: nearestUsableTick(TickMath.MIN_TICK, TICK_SPACINGS[feeAmount]),
       liquidityNet: liquidity,
-      liquidityCross: liquidity
+      liquidityGross: liquidity
     }, {
-      index: nearestUsableTick(TickMath.MIN_TICK, TICK_SPACINGS[feeAmount]),
-      liquidityNet: JSBImultiply(liquidity, JSBI.BigInt("-1")),
-      liquidityCross: liquidity
-    }
-  ])
-
-};
+      index: nearestUsableTick(TickMath.MAX_TICK, TICK_SPACINGS[feeAmount]),
+      liquidityNet: JSBI.multiply(JSBI.BigInt(liquidity), JSBI.BigInt("-1")),
+      liquidityGross: liquidity
+    }]
+  );
+}
 
 function swapOptions(options) {
-  return Object.assing(
+  return Object.assign(
     {
       slippageTolerance: new Percent(5, 100),
       recipient: RECIPIENT,
     },
     options
   );
-};
+}
 
 function buildTrade(trades) {
   return new RouterTrade({
@@ -95,43 +93,82 @@ function buildTrade(trades) {
         inputAmount: trade.inputAmount,
         outputAmount: trade.outputAmount,
       })),
-      v3Routes: trades
-        .filter((trade) => trade instanceof V3Trade)
-        .map((trade) => ({
-          routev3: trade.route,
-          inputAmount: trade.inputAmount,
-          autputAmount: trade.outputAmount,
+    v3Routes: trades
+      .filter((trade) => trade instanceof V3Trade)
+      .map((trade) => ({
+        routev3: trade.route,
+        inputAmount: trade.inputAmount,
+        outputAmount: trade.outputAmount,
       })),
-      mixedRouts: trades
-        .filter((trade) => trade instanceof MixedRouteTrade)
-        .map((trade) => ({
-          mixedRoute: trade.route,
-          inputAmount: trade.inputAmount,
-          outputAmount: trade.outputAmount,
+    mixedRoutes: trades
+      .filter((trade) => trade instanceof MixedRouteTrade)
+      .map((trade) => ({
+        mixedRoute: trade.route,
+        inputAmount: trade.inputAmount,
+        outputAmount: trade.outputAmount,
       })),
     tradeType: trades[0].tradeType,
   });
-};
+}
 
 const RECIPIENT = "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B";
 
 async function main() {
   const signer = await hardhat.ethers.getImpersonatedSigner(RECIPIENT);
-  const WETH_USDC_V3 = await getPool(WETH, USDC, FeeAmount.MEDIUN);
-  const inputEther = hardhat.ethers.utils.parseEther("10").toString();
+  const WETH_USDC_V3 = await getPool(WETH, USDC, FeeAmount.MEDIUM);
+  const inputEther = hardhat.ethers.utils.parseEther("1").toString();
 
   const trade = await V3Trade.fromRoute(
     new RouteV3([WETH_USDC_V3], ETHER, USDC),
-    CurrencyAmount.fromRqwAmount(ETHER, inputEther),
+    CurrencyAmount.fromRawAmount(ETHER, inputEther),
     TradeType.EXACT_INPUT
   );
 
   const routerTrade = buildTrade([trade]);
-
   const opts = swapOptions({});
+  const params = SwapRouter.swapCallParameters(routerTrade, opts);
 
-  const params = SwapRouter.swapERC20CallParameters(routerTrade, opts);
+
+  let ethBalance;
+  let wethBalance;
+  let usdcBalance;
+  ethBalance = await provider.getBalance(RECIPIENT);
+  wethBalance = await wethContract.balanceOf(RECIPIENT);
+  usdcBalance = await usdcContract.balanceOf(RECIPIENT);
+  console.log("--BEFORE");
+  console.log("ethBalance", hardhat.ethers.utils.formatUnits(ethBalance, 18));
+  console.log("wethBalance", hardhat.ethers.utils.formatUnits(wethBalance, 18));
+  console.log("usdcBalance", hardhat.ethers.utils.formatUnits(usdcBalance, 6));
+
+  const tx = await signer.sendTransaction({
+    data: params.calldata,
+    to: "0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B",
+    value: params.value,
+    from: RECIPIENT,
+  });
+
+  const receipt = await tx.wait();
+  console.log("--SUCCESS");
+  console.log("status", receipt.status);
+
+  console.log(WETH_USDC_V3);
+  console.log(trade);
+  console.log(routerTrade);
+  console.log(opts);
+  console.log(params);
+
+  ethBalance = await provider.getBalance(RECIPIENT);
+  wethBalance = await wethContract.balanceOf(RECIPIENT);
+  usdcBalance = await usdcContract.balanceOf(RECIPIENT);
+  console.log("--------AFTER");
+  console.log("ethBalance", hardhat.ethers.utils.formatUnits(ethBalance, 18));
+  console.log("wethBalance", hardhat.ethers.utils.formatUnits(wethBalance, 18));
+  console.log("usdcBalance", hardhat.ethers.utils.formatUnits(usdcBalance, 6));
 }
 
-
-
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
