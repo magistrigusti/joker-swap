@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import toast from "react-hot-toast";
 import JSBI from "jsbi";
 import Web3Modal from web3modal;
-
+// internal import uniswap
 import { SwapRouter } from "@uniswap/universal-router-sdk";
 import {
   TradeType,
@@ -24,7 +24,7 @@ import {
 } from "@uniswap/v3-sdk";
 import { MixedRouteTrade, Trade as RouterTrade } from "@uniswaprouter-sdk";
 import IUniswapV3Pool from "@uniswap/v3-core/artifacts/contracts/UniswapV3Pool.sol/UniswapV3Pool.json";
-
+//internal import
 import { ERC20_ABI, web3Provider, CONNECTING_CONTRACT } from "./constans";
 import { shortenAddress, parseErrorMsg } from "../utils/index";
 
@@ -159,8 +159,8 @@ export const PROVIDER = ({children}) => {
       // const ETHER = Ether.onChain(network.chainID)
       const ETHER = Ether.onChain(1);
 
-      const tokenAddress1 = await CONNECTING_CONTRACT("");
-      const tokenAddress2 = await CONNECTING_CONTRACT("");
+      const tokenAddress1 = await CONNECTING_CONTRACT("0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2");
+      const tokenAddress2 = await CONNECTING_CONTRACT("0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48");
 
       const TOKEN_A = new Token(
         tokenAddress1.chainId,
@@ -193,7 +193,7 @@ export const PROVIDER = ({children}) => {
       const routerTrade = buildTrade([trade]);
       const opts = swapOptions({});
       const params = SwapRouter.swapERC20CallParameters(routerTrade, opts);
-
+      // const params = SwapRouter.swapCallParameters(routerTrade, opts);
       console.log(WETH_USDC_V3);
       console.log(trade);
       console.log(routerTrade);
@@ -206,7 +206,8 @@ export const PROVIDER = ({children}) => {
 
       ethBalance = await provider.getBalance(RECIPIENT);
       tokenA = await tokenAddress1.balance;
-      tokenB = await tokenAddress2.balance;
+      tokenA = await tokenAddress2.balance;
+      // tokenB = await tokenAddress2.balance;
       console.log("____________BEFORE");
       console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
       console.log("tokenA:", tokenA);
@@ -227,7 +228,8 @@ export const PROVIDER = ({children}) => {
 
       ethBalance = await provider.getBalance(RECIPIENT);
       tokenA = await tokenAddress1.balance;
-      tokenB== await tokenAddress2.balance;
+      tokenA = await tokenAddress2.balance;
+      tokenB = await tokenAddress2.balance;
       console.log("-------After");
 
       console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
