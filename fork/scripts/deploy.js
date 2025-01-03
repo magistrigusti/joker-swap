@@ -151,11 +151,11 @@ async function main() {
   console.log("--SUCCESS");
   console.log("status", receipt.status);
 
-  console.log(WETH_USDC_V3);
-  console.log(trade);
-  console.log(routerTrade);
-  console.log(opts);
-  console.log(params);
+  // console.log(WETH_USDC_V3);
+  // console.log(trade);
+  // console.log(routerTrade);
+  // console.log(opts);
+  // console.log(params);
 
   ethBalance = await provider.getBalance(RECIPIENT);
   wethBalance = await wethContract.balanceOf(RECIPIENT);
