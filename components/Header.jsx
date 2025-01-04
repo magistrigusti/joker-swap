@@ -18,8 +18,8 @@ const Header = ({ address, connect }) => {
         <div className="container">
           <a className="navbar-brand" href="/">
             <img
-              style={{ height: "80px" }}
-              src="assets/img/joker-logo-black.png"
+              style={{ height: "50px" }}
+              src="assets/img/joker-logo.png"
               alt="swap"
             />
           </a>
