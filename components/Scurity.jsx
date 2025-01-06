@@ -50,8 +50,8 @@ const Scurity = () => {
             </div>
 
             <div className="col-xl-4 col-lg-6 wow fadeInUp"
-              data-wow-duration="0.3s"
-              data-wow-delay="0.2s"
+              data-wow-duration="0.4s"
+              data-wow-delay="0.4s"
             >
               <div className="scurity-box one">
                 <div className="icon">
@@ -59,24 +59,25 @@ const Scurity = () => {
                 </div>
 
                 <div className="content">
-                  <h5 className="cont-head">3-D Secure</h5>
+                  <h5 className="cont-head">PIC DSS</h5>
 
-                  <p className="text">Transaction Security</p>
+                  <p className="text">Security Standard</p>
                 </div>
               </div>
             </div>
 
             <div className="col-xl-4 col-lg-6 wow fadeInUp"
-              data-wow-duration="0.3s"
-              data-wow-delay="0.2s"
+              data-wow-duration="0.5s"
+              data-wow-delay="0.5s"
             >
               <div className="scurity-box one">
                 <div className="icon">
-                  <img src="assets/img/scurity-icon-2.png" alt="" />
+                  <img src="assets/img/scurity-icon-3.png" alt="" />
                 </div>
 
                 <div className="content">
-                  <h5 className="cont-head">3-D Security</h5>
+                  <h5 className="cont-head">2FA</h5>
+                  <p className="text">2 Steps Verifications</p>
                 </div>
               </div>
             </div>
