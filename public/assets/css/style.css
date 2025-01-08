@@ -192,6 +192,7 @@ button:focus {
 /* Global style */
 
 .button-1 {
+    margin-top: 10px;
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -206,7 +207,7 @@ button:focus {
     color: #ffffff;
     font-weight: 600;
     border-radius: 30px;
-    width: 160px;
+    width: 260px;
     height: 50px;
     text-transform: uppercase;
     background: linear-gradient(45deg, #903eff 0%, #3e19ff 100%);

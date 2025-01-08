@@ -14,7 +14,8 @@ export const web3Provider = async () => {
     const web3modal = new web3Modal();
     const connection = await web3modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
-    // const network = await provider.getNetwork();
+    const network = await provider.getNetwork();
+    return provider;
   } catch (error) {
     console.log(error);
   }
@@ -44,7 +45,7 @@ export const CONNECTING_CONTRACT = async (ADDRESS) => {
       name: name,
       symbol: symbol,
       decimals: decimals,
-      supply: ethers.utils.formatEther(supplytoString()),
+      supply: ethers.utils.formatEther(supply.toString()),
       balance: ethers.utils.formatEther(balance.toString()),
       chainId: 1,
       // chainId: network.chainId
