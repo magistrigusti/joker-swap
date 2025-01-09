@@ -116,7 +116,7 @@ const RECIPIENT = "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B";
 async function main() {
   const signer = await hardhat.ethers.getImpersonatedSigner(RECIPIENT);
   const WETH_USDC_V3 = await getPool(WETH, USDC, FeeAmount.MEDIUM);
-  const inputEther = hardhat.ethers.utils.parseEther("10").toString();
+  const inputEther = hardhat.ethers.utils.parseEther("5").toString();
 
   const trade = await V3Trade.fromRoute(
     new RouteV3([WETH_USDC_V3], ETHER, USDC),

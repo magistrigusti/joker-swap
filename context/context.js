@@ -158,18 +158,23 @@ export const PROVIDER = ({ children }) => {
 
   // swap
   const swap = async (token_1, token_2, swapInputAmount) => {
-    try {
+    console.log(token_1, token_2, swapInputAmount);
+    // try {
       console.log("CALLING ME______SWAP");
-      const provider = web3Provider();
+      // const _inputAmount = 1;
+      const provider = await web3Provider();
 
       const network = await provider.getNetwork();
       const ETHER = Ether.onChain(network.chainId);
+    //   const ETHER = Ether.onChain(1);
 
       const tokenAddress1 = await CONNECTING_CONTRACT(
-        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        token_1.address
+        // "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
       );
       const tokenAddress2 = await CONNECTING_CONTRACT(
-        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        token_2.address
+        // "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
       );
 
       const TOKEN_A = new Token(
@@ -195,11 +200,13 @@ export const PROVIDER = ({ children }) => {
         provider
       );
 
-      const inputEther = ethers.utils.parseEther("1");
+      const inputEther = ethers.utils
+        .parseEther(swapInputAmount).toString();
 
       const trade = await V3Trade.fromRoute(
         new RouteV3([WETH_USDC_V3], ETHER, TOKEN_B),
-        CurrencyAmount.fromRawAmount(ETHER, JSBI.BigInt(inputEther.toString())),
+        CurrencyAmount.fromRawAmount(Ether, inputEther),
+        // CurrencyAmount.fromRawAmount(ETHER, JSBI.BigInt(inputEther.toString())),
         TradeType.EXACT_INPUT
       );
 
@@ -217,40 +224,42 @@ export const PROVIDER = ({ children }) => {
       let tokenB;
 
       ethBalance = await provider.getBalance(RECIPIENT);
-      tokenA = await tokenAddress1.balanceOf(RECIPIENT);
-      tokenB = await tokenAddress2.balanceOf(RECIPIENT);
+      tokenA = await tokenAddress1.balance;
+      tokenA = await tokenAddress2.balance;
+      // tokenA = await tokenAddress1.balanceOf(RECIPIENT);
+      // tokenB = await tokenAddress2.balanceOf(RECIPIENT);
       console.log("____________BEFORE");
       console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
       console.log("tokenA:", tokenA);
       console.log("tokenB:", tokenB);
 
-      const signer = await provider.getSigner();
-      const tx = await signer.sendTransaction({
-        data: params.calldata,
-        to: "0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B",
-        value: params.value,
-        from: RECIPIENT,
-      });
+    //   const signer = await provider.getSigner();
+    //   const tx = await signer.sendTransaction({
+    //     data: params.calldata,
+    //     to: "0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B",
+    //     value: params.value,
+    //     from: RECIPIENT,
+    //   });
 
-      console.log("____________CALLING_ME");
-      const receipt = await tx.wait();
+    //   console.log("____________CALLING_ME");
+    //   const receipt = await tx.wait();
 
-      console.log("_________SUCCESS");
-      console.log("STATUS", receipt.status);
+    //   console.log("_________SUCCESS");
+    //   console.log("STATUS", receipt.status);
 
-      ethBalance = await provider.getBalance(RECIPIENT);
-      tokenA = await tokenAddress1.balanceOf(RECIPIENT);
-      tokenB = await tokenAddress2.balanceOf(RECIPIENT);
-      console.log("-------After");
+    //   ethBalance = await provider.getBalance(RECIPIENT);
+    //   tokenA = await tokenAddress1.balanceOf(RECIPIENT);
+    //   tokenB = await tokenAddress2.balanceOf(RECIPIENT);
+    //   console.log("-------After");
 
-      console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
-      console.log("tokenA:", tokenA);
-      console.log("tokenB:", tokenB);
-    } catch (error) {
-      const errorMsg = parseErrorMsg(error);
-      notifyError(errorMsg);
-      console.log(error);
-    }
+    //   console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
+    //   console.log("tokenA:", tokenA);
+    //   console.log("tokenB:", tokenB);
+    // } catch (error) {
+    //   const errorMsg = parseErrorMsg(error);
+    //   notifyError(errorMsg);
+    //   console.log(error);
+    // }
   };
 
   return (

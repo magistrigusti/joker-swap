@@ -10,6 +10,7 @@ const Hero = ({
   token_2,
   setToken_1,
   setToken_2,
+  inputAmount,
   swap,
 }) => {
   //reset button
@@ -84,7 +85,9 @@ const Hero = ({
 
                   <div>
                     <div className="form-group">
-                      <span onClick={() => setOpenToken(true)}>
+                      <span onClick={() => setOpenToken(true)}
+                        style={{cursor: 'pointer'}}  
+                      >
                         Open
                       </span>
 
@@ -92,7 +95,7 @@ const Hero = ({
                         type="text" 
                         placeholder={token_1?.symbol || "Select"}
                         onChange={(e) => setInputAmount(e.target.value)}
-                        onClick={() => setOpenToken(true)}
+                        // onClick={() => setOpenToken(true)}
                       />
                     </div>
                   </div>
@@ -115,9 +118,7 @@ const Hero = ({
 
                 <div className="exchange-box">
                   <div className="selector">
-                    <p className="text">
-                      You Get
-                    </p>
+                    <p className="text">You Get</p>
 
                     <div className="coin">
                       <span>{token_2?.symbol}</span>
@@ -126,13 +127,16 @@ const Hero = ({
 
                   <div>
                     <div className="form-group">
-                      <span onClick={() => setOpenToken(true)}>
+                      <span onClick={() => setOpenToken(true)}
+                        style={{cursor: "pointer"}}  
+                      >
                         Open
                       </span>
 
                       <input className="form-control" 
-                        onClick={() => setOpenToken(true)}
+                        // onClick={() => setOpenToken(true)}
                         placeholder={token_2?.symbol || "Select"}
+                        onChange={(e) => setInputAmount(e.target.value)}
                       />
                     </div>
                   </div>
@@ -148,7 +152,7 @@ const Hero = ({
                 </div>
 
                 <a className="button button-1"
-                  onClick={() => swap()}
+                  onClick={() => swap(token_1, token_2, inputAmount)}
                 >
                   Exchange
                 </a>

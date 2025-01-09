@@ -44,7 +44,7 @@ const Token = ({
       <div className="hero-area">
         <div className="conatiner">
           <div className="row align-items-center justify-content-between">
-            <div className="col-xl-8 col-lg-6 wow new-width">
+            <div className="col-xl-12 col-lg-6 wow new-width">
               <div className="exchange">
                 <h5 className="ex-head">Cryptocurrency Token</h5>
 
@@ -65,13 +65,16 @@ const Token = ({
                     />
                   </div>
                 </div>
-              </div>
 
-              {displayToken && (
-                <a className="button button-1" onClick={selectToken}>
-                  {shortenAddress(displayToken?.address)} {displayToken?.symbol}
-                </a>
-              )}
+                {displayToken && (
+                  <a className="button button-1" 
+                    onClick={() => selectToken()}
+                  >
+                    {shortenAddress(displayToken?.address)}
+                     {displayToken?.symbol}
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>

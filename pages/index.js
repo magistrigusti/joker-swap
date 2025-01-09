@@ -52,6 +52,7 @@ const index = () => {
         LOAD_TOKEN={LOAD_TOKEN}
         token_1={token_1}
         token_2={token_2}
+        inputAmount={inputAmount}
         setToken_1={setToken_1}
         setToken_2={setToken_2}
         swap={swap}
