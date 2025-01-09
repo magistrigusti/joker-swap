@@ -116,7 +116,7 @@ export const PROVIDER = ({ children }) => {
   function swapOptions(options) {
     return Object.assign(
       {
-        slippageTolerance: new Percent(JSBI.BigInt(5).toNumber(), JSBI.BigInt(100).toNumber()),
+        slippageTolerance: new Percent(5, 100),
         recipient: RECIPIENT,
       },
       options
@@ -159,13 +159,15 @@ export const PROVIDER = ({ children }) => {
   // swap
   const swap = async (token_1, token_2, swapInputAmount) => {
     console.log(token_1, token_2, swapInputAmount);
-    // try {
+    try {
       console.log("CALLING ME______SWAP");
       // const _inputAmount = 1;
       const provider = await web3Provider();
+      const signer = await provider.getSigner();
+      const userAddress = await signer.getAddress();
 
-      const network = await provider.getNetwork();
-      const ETHER = Ether.onChain(network.chainId);
+      // const network = await provider.getNetwork();
+      const ETHER = Ether.onChain(token_1.chainId);
     //   const ETHER = Ether.onChain(1);
 
       const tokenAddress1 = await CONNECTING_CONTRACT(
@@ -205,8 +207,8 @@ export const PROVIDER = ({ children }) => {
 
       const trade = await V3Trade.fromRoute(
         new RouteV3([WETH_USDC_V3], ETHER, TOKEN_B),
-        CurrencyAmount.fromRawAmount(Ether, inputEther),
-        // CurrencyAmount.fromRawAmount(ETHER, JSBI.BigInt(inputEther.toString())),
+        // CurrencyAmount.fromRawAmount(ETHER, inputEther),
+        CurrencyAmount.fromRawAmount(ETHER, JSBI.BigInt(inputEther.toString())),
         TradeType.EXACT_INPUT
       );
 
@@ -223,9 +225,9 @@ export const PROVIDER = ({ children }) => {
       let tokenA;
       let tokenB;
 
-      ethBalance = await provider.getBalance(RECIPIENT);
+      ethBalance = await provider.getBalance(userAddress);
       tokenA = await tokenAddress1.balance;
-      tokenA = await tokenAddress2.balance;
+      tokenB = await tokenAddress2.balance;
       // tokenA = await tokenAddress1.balanceOf(RECIPIENT);
       // tokenB = await tokenAddress2.balanceOf(RECIPIENT);
       console.log("____________BEFORE");
@@ -233,33 +235,35 @@ export const PROVIDER = ({ children }) => {
       console.log("tokenA:", tokenA);
       console.log("tokenB:", tokenB);
 
-    //   const signer = await provider.getSigner();
-    //   const tx = await signer.sendTransaction({
-    //     data: params.calldata,
-    //     to: "0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B",
-    //     value: params.value,
-    //     from: RECIPIENT,
-    //   });
+      // const signer = await provider.getSigner();
+      const tx = await signer.sendTransaction({
+        data: params.calldata,
+        to: userAddress,
+        // to: "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B",
+        // to: "0xEf1c6E67703c7BD7107eed8303Fbe6EC2554BF6B",
+        value: params.value,
+        from: userAddress,
+      });
 
-    //   console.log("____________CALLING_ME");
-    //   const receipt = await tx.wait();
+      console.log("____________CALLING_ME");
+      const receipt = await tx.wait();
 
-    //   console.log("_________SUCCESS");
-    //   console.log("STATUS", receipt.status);
+      console.log("_________SUCCESS");
+      console.log("STATUS", receipt.status);
 
-    //   ethBalance = await provider.getBalance(RECIPIENT);
-    //   tokenA = await tokenAddress1.balanceOf(RECIPIENT);
-    //   tokenB = await tokenAddress2.balanceOf(RECIPIENT);
-    //   console.log("-------After");
+      ethBalance = await provider.getBalance(userAddress);
+      tokenA = await tokenAddress1.balance;
+      tokenB = await tokenAddress2.balance;
+      console.log("-------After");
 
-    //   console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
-    //   console.log("tokenA:", tokenA);
-    //   console.log("tokenB:", tokenB);
-    // } catch (error) {
-    //   const errorMsg = parseErrorMsg(error);
-    //   notifyError(errorMsg);
-    //   console.log(error);
-    // }
+      console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
+      console.log("tokenA:", tokenA);
+      console.log("tokenB:", tokenB);
+    } catch (error) {
+      const errorMsg = parseErrorMsg(error);
+      notifyError(errorMsg);
+      console.log(error);
+    }
   };
 
   return (
