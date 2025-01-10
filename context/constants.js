@@ -38,7 +38,7 @@ export const CONNECTING_CONTRACT = async (ADDRESS) => {
     const symbol = await contract.symbol();
     const supply = await contract.totalSupply();
     const decimals = await contract.decimals();
-    const address = await contract.address;
+    const address = contract.address;
 
     const token = {
       address: address,

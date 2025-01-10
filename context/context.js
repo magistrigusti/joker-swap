@@ -158,8 +158,12 @@ export const PROVIDER = ({ children }) => {
 
   // swap
   const swap = async (token_1, token_2, swapInputAmount) => {
-    console.log(token_1, token_2, swapInputAmount);
+
     try {
+      if (!token_1 || !token_2 || !swapInputAmount) {
+        notifyError("Please provide all the details for swap");
+      }
+
       console.log("CALLING ME______SWAP");
       // const _inputAmount = 1;
       const provider = await web3Provider();
@@ -168,7 +172,7 @@ export const PROVIDER = ({ children }) => {
 
       // const network = await provider.getNetwork();
       const ETHER = Ether.onChain(token_1.chainId);
-    //   const ETHER = Ether.onChain(1);
+      // const ETHER = Ether.onChain(1);
 
       const tokenAddress1 = await CONNECTING_CONTRACT(
         token_1.address
@@ -202,13 +206,12 @@ export const PROVIDER = ({ children }) => {
         provider
       );
 
-      const inputEther = ethers.utils
-        .parseEther(swapInputAmount).toString();
+      const inputEther = ethers.utils.parseEther(swapInputAmount).toString();
 
       const trade = await V3Trade.fromRoute(
         new RouteV3([WETH_USDC_V3], ETHER, TOKEN_B),
-        // CurrencyAmount.fromRawAmount(ETHER, inputEther),
-        CurrencyAmount.fromRawAmount(ETHER, JSBI.BigInt(inputEther.toString())),
+        CurrencyAmount.fromRawAmount(ETHER, inputEther),
+        // CurrencyAmount.fromRawAmount(ETHER, JSBI.BigInt(inputEther.toString())),
         TradeType.EXACT_INPUT
       );
 
@@ -257,6 +260,7 @@ export const PROVIDER = ({ children }) => {
       console.log("-------After");
 
       console.log("EthBalance:", ethers.utils.formatUnits(ethBalance, 18));
+      notifySuccess(`TOKENA:${tokenA}, TOKENB:${tokenB}`);
       console.log("tokenA:", tokenA);
       console.log("tokenB:", tokenB);
     } catch (error) {

@@ -42,7 +42,7 @@ const Token = ({
   return (
     <div className="banner">
       <div className="hero-area">
-        <div className="conatiner">
+        <div className="container">
           <div className="row align-items-center justify-content-between">
             <div className="col-xl-12 col-lg-6 wow new-width">
               <div className="exchange">
